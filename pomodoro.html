@@ -371,15 +371,25 @@ function notify(msg) {
 
 function playSound() {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 200, 400].forEach(delay => {
+    const melody = [
+        { freq: 587, start: 0,    dur: 0.15 },
+        { freq: 784, start: 0.18, dur: 0.15 },
+        { freq: 880, start: 0.36, dur: 0.25 },
+        { freq: 784, start: 0.7,  dur: 0.15 },
+        { freq: 880, start: 0.88, dur: 0.15 },
+        { freq: 1047, start: 1.06, dur: 0.35 },
+    ];
+    melody.forEach(note => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = note.freq;
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime + note.start);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + note.start + note.dur);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.frequency.value = 800;
-        gain.gain.value = 0.1;
-        osc.start(audioCtx.currentTime + delay / 1000);
-        osc.stop(audioCtx.currentTime + delay / 1000 + 0.15);
+        osc.start(audioCtx.currentTime + note.start);
+        osc.stop(audioCtx.currentTime + note.start + note.dur + 0.05);
     });
 }
 
@@ -405,5 +415,6 @@ updateDisplay();
 updateSessions();
 showQuote();
 </script>
+<script src="auth.js"></script>
 </body>
 </html>
