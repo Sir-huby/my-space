@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 星空穿越</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body { background: #000; overflow: hidden; }
+        canvas { display: block; }
+        .overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .overlay h1 {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 12px;
+            text-transform: uppercase;
+        }
+        .info {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.3);
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+        .speed-display {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            color: rgba(255,255,255,0.3);
+            font-family: 'Segoe UI', monospace;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:20px;left:20px;z-index:999;display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:50px;color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.85rem;font-family:'Segoe UI','Microsoft YaHei',sans-serif;transition:all 0.3s;" onmouseover="this.style.borderColor='#6c63ff';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">← 返回主页</a>
+<canvas id="c"></canvas>
+<div class="overlay"><h1>STARFIELD</h1></div>
+<div class="info">移动鼠标控制方向 · 滚轮 / 点击控制速度</div>
+<div class="speed-display" id="speedInfo">SPEED: 1.0x</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const speedInfo = document.getElementById('speedInfo');
+let W, H;
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+
+const STAR_COUNT = 1200;
+let speed = 1;
+let targetSpeed = 1;
+let mx = 0.5, my = 0.5;
+
+const stars = [];
+for (let i = 0; i < STAR_COUNT; i++) {
+    stars.push({
+        x: (Math.random() - 0.5) * 2000,
+        y: (Math.random() - 0.5) * 2000,
+        z: Math.random() * 2000,
+        color: Math.random() > 0.9 ? `hsl(${Math.random() * 360}, 60%, 70%)` : null
+    });
+}
+
+// 星云
+const nebulae = [];
+for (let i = 0; i < 8; i++) {
+    nebulae.push({
+        x: (Math.random() - 0.5) * 1500,
+        y: (Math.random() - 0.5) * 1500,
+        z: 500 + Math.random() * 1500,
+        size: 100 + Math.random() * 200,
+        hue: Math.random() * 360,
+        opacity: 0.03 + Math.random() * 0.04
+    });
+}
+
+addEventListener('mousemove', (e) => {
+    mx = e.clientX / W;
+    my = e.clientY / H;
+});
+
+addEventListener('wheel', (e) => {
+    targetSpeed += e.deltaY > 0 ? 0.5 : -0.5;
+    targetSpeed = Math.max(0.1, Math.min(8, targetSpeed));
+});
+
+addEventListener('mousedown', () => { targetSpeed = Math.min(8, targetSpeed + 2); });
+addEventListener('mouseup', () => { targetSpeed = Math.max(1, targetSpeed - 1.5); });
+
+function animate() {
+    // 渐变清除 - 留下拖尾
+    ctx.fillStyle = speed > 3 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.25)';
+    ctx.fillRect(0, 0, W, H);
+
+    speed += (targetSpeed - speed) * 0.05;
+    speedInfo.textContent = `SPEED: ${speed.toFixed(1)}x`;
+
+    const cx = W / 2;
+    const cy = H / 2;
+    const offsetX = (mx - 0.5) * 200;
+    const offsetY = (my - 0.5) * 200;
+
+    // 绘制星云
+    nebulae.forEach(n => {
+        n.z -= speed * 0.3;
+        if (n.z < 1) { n.z = 2000; n.x = (Math.random()-0.5)*1500; n.y = (Math.random()-0.5)*1500; }
+        const scale = 800 / n.z;
+        const sx = (n.x + offsetX) * scale + cx;
+        const sy = (n.y + offsetY) * scale + cy;
+        const size = n.size * scale;
+        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, size);
+        grd.addColorStop(0, `hsla(${n.hue}, 50%, 40%, ${n.opacity * (1 - n.z/2000)})`);
+        grd.addColorStop(1, 'transparent');
+        ctx.fillStyle = grd;
+        ctx.fillRect(sx - size, sy - size, size * 2, size * 2);
+    });
+
+    // 绘制星星
+    stars.forEach(s => {
+        s.z -= speed * 3;
+        if (s.z < 1) {
+            s.x = (Math.random() - 0.5) * 2000;
+            s.y = (Math.random() - 0.5) * 2000;
+            s.z = 2000;
+        }
+
+        const scale = 800 / s.z;
+        const sx = (s.x + offsetX) * scale + cx;
+        const sy = (s.y + offsetY) * scale + cy;
+
+        if (sx < -50 || sx > W + 50 || sy < -50 || sy > H + 50) return;
+
+        const prevZ = s.z + speed * 3;
+        const prevScale = 800 / prevZ;
+        const px = (s.x + offsetX) * prevScale + cx;
+        const py = (s.y + offsetY) * prevScale + cy;
+
+        const brightness = Math.min(1, (1 - s.z / 2000) * 1.5);
+        const size = Math.max(0.5, scale * 1.5);
+
+        if (speed > 1.5) {
+            ctx.strokeStyle = s.color || `rgba(200, 210, 255, ${brightness * 0.8})`;
+            ctx.lineWidth = Math.min(size, 2.5);
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(sx, sy);
+            ctx.stroke();
+        }
+
+        ctx.fillStyle = s.color || `rgba(220, 230, 255, ${brightness})`;
+        ctx.shadowColor = s.color || `rgba(180, 200, 255, ${brightness})`;
+        ctx.shadowBlur = size * 3;
+        ctx.beginPath();
+        ctx.arc(sx, sy, size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.shadowBlur = 0;
+
+    // 中心光晕
+    if (speed > 2) {
+        const glow = ctx.createRadialGradient(cx + offsetX * 0.2, cy + offsetY * 0.2, 0, cx, cy, 200);
+        glow.addColorStop(0, `rgba(100, 120, 255, ${(speed - 2) * 0.02})`);
+        glow.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+    }
+
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
