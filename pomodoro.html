@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>番茄�?· Focus Timer</title>
+    <title>番茄钟 · Focus Timer</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -49,7 +49,7 @@
             color: #fff;
         }
 
-        /* 圆环计时�?*/
+        /* 圆环计时器 */
         .timer-ring {
             position: relative;
             width: 320px;
@@ -194,14 +194,14 @@
 </head>
 <body class="work">
 
-<a href="index.html" style="position:fixed;top:20px;left:20px;z-index:999;display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(0,0,0,0.3);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:50px;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;font-family:'Segoe UI','Microsoft YaHei',sans-serif;transition:all 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.6)'">�?返回主页</a>
+<a href="index.html" style="position:fixed;top:20px;left:20px;z-index:999;display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(0,0,0,0.3);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:50px;color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.85rem;font-family:'Segoe UI','Microsoft YaHei',sans-serif;transition:all 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.6)'">← 返回主页</a>
 <div class="bg-circles" id="bgCircles"></div>
 <div class="notification" id="notification"></div>
 
 <div class="container">
     <div class="mode-tabs">
         <button class="tab active" onclick="setMode(0)">🍅 专注 25min</button>
-        <button class="tab" onclick="setMode(1)">�?短休 5min</button>
+        <button class="tab" onclick="setMode(1)">☕ 短休 5min</button>
         <button class="tab" onclick="setMode(2)">🌙 长休 15min</button>
     </div>
 
@@ -224,8 +224,8 @@
 
     <div class="buttons">
         <button class="btn" onclick="resetTimer()" title="重置">🔄</button>
-        <button class="btn btn-main" id="playBtn" onclick="toggleTimer()">�?/button>
-        <button class="btn" onclick="skipTimer()" title="跳过">�?/button>
+        <button class="btn btn-main" id="playBtn" onclick="toggleTimer()">▶</button>
+        <button class="btn" onclick="skipTimer()" title="跳过">⏭</button>
     </div>
 
     <div class="sessions" id="sessions"></div>
@@ -236,19 +236,19 @@
 <script>
 const MODES = [
     { name: '专注时间', duration: 25 * 60, bodyClass: 'work' },
-    { name: '短休�?, duration: 5 * 60, bodyClass: 'rest' },
-    { name: '长休�?, duration: 15 * 60, bodyClass: 'long-rest' },
+    { name: '短休', duration: 5 * 60, bodyClass: 'rest' },
+    { name: '长休', duration: 15 * 60, bodyClass: 'long-rest' },
 ];
 
 const quotes = [
-    '专注是成功的关键。一次只做一件事�?,
-    '不积跬步，无以至千里�?,
-    '最好的学习方式就是开始做�?,
-    '休息是为了走更远的路�?,
-    '每一个专注的25分钟，都是对未来的投资�?,
-    '代码写累了？站起来活动活动吧�?,
-    '坚持就是胜利，你已经很棒了�?,
-    '好的程序员知道什么时候该休息�?,
+    '专注是成功的关键。一次只做一件事。',
+    '不积跬步，无以至千里。',
+    '最好的学习方式就是开始做。',
+    '休息是为了走更远的路。',
+    '每一个专注的25分钟，都是对未来的投资。',
+    '代码写累了？站起来活动活动吧。',
+    '坚持就是胜利，你已经很棒了。',
+    '好的程序员知道什么时候该休息。',
 ];
 
 let currentMode = 0;
@@ -295,7 +295,7 @@ function setMode(m) {
     totalTime = MODES[m].duration;
     running = false;
     clearInterval(interval);
-    playBtn.textContent = '�?;
+    playBtn.textContent = '▶';
     modeLabel.textContent = MODES[m].name;
     document.body.className = MODES[m].bodyClass;
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === m));
@@ -307,16 +307,16 @@ function toggleTimer() {
     if (running) {
         running = false;
         clearInterval(interval);
-        playBtn.textContent = '�?;
+        playBtn.textContent = '▶';
     } else {
         running = true;
-        playBtn.textContent = '�?;
+        playBtn.textContent = '⏸';
         interval = setInterval(() => {
             timeLeft--;
             if (timeLeft <= 0) {
                 clearInterval(interval);
                 running = false;
-                playBtn.textContent = '�?;
+                playBtn.textContent = '▶';
                 onComplete();
             }
             updateDisplay();
@@ -329,7 +329,7 @@ function resetTimer() {
     running = false;
     timeLeft = MODES[currentMode].duration;
     totalTime = MODES[currentMode].duration;
-    playBtn.textContent = '�?;
+    playBtn.textContent = '▶';
     updateDisplay();
 }
 
@@ -340,8 +340,7 @@ function skipTimer() {
 }
 
 function onComplete() {
-    notify(MODES[currentMode].name + ' 结束�?);
-    playSound();
+    notify(MODES[currentMode].name + ' 结束！');    playSound();
 
     if (currentMode === 0) {
         completedSessions++;
@@ -363,7 +362,7 @@ function notify(msg) {
     setTimeout(() => notificationEl.classList.remove('show'), 3000);
 
     if (Notification.permission === 'granted') {
-        new Notification('番茄�?, { body: msg });
+        new Notification('番茄钟', { body: msg });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission();
     }
