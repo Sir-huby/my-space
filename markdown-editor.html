@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown 编辑器</title>
+    <title>Markdown 编辑�?/title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -15,7 +15,7 @@
             flex-direction: column;
         }
 
-        /* 顶部工具栏 */
+        /* 顶部工具�?*/
         .toolbar {
             background: #16161e;
             padding: 10px 20px;
@@ -68,7 +68,7 @@
         }
         .divider:hover { background: #7aa2f7; }
 
-        /* 编辑区 */
+        /* 编辑�?*/
         .editor-pane {
             flex: 1;
             display: flex;
@@ -97,7 +97,7 @@
             tab-size: 4;
         }
 
-        /* 预览区 */
+        /* 预览�?*/
         .preview-pane {
             flex: 1;
             display: flex;
@@ -157,7 +157,7 @@
         #preview img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
         #preview del { color: #565f89; }
 
-        /* 滚动条 */
+        /* 滚动�?*/
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1a1b26; }
         ::-webkit-scrollbar-thumb { background: #292e42; border-radius: 4px; }
@@ -167,7 +167,7 @@
 <body>
 
 <div class="toolbar">
-    <a href="index.html" style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid #3b4261;border-radius:6px;color:#a9b1d6;text-decoration:none;font-size:0.8rem;transition:all 0.2s;margin-right:8px;" onmouseover="this.style.borderColor='#7aa2f7';this.style.color='#c0caf5'" onmouseout="this.style.borderColor='#3b4261';this.style.color='#a9b1d6'">← 主页</a>
+    <a href="index.html" style="display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid #3b4261;border-radius:6px;color:#a9b1d6;text-decoration:none;font-size:0.8rem;transition:all 0.2s;margin-right:8px;" onmouseover="this.style.borderColor='#7aa2f7';this.style.color='#c0caf5'" onmouseout="this.style.borderColor='#3b4261';this.style.color='#a9b1d6'">�?主页</a>
     <span class="title">📝 Markdown Editor</span>
     <button class="tool-btn" onclick="insert('# ')">H1</button>
     <button class="tool-btn" onclick="insert('## ')">H2</button>
@@ -182,7 +182,7 @@
     <button class="tool-btn" onclick="insert('---\n')">HR</button>
     <span class="spacer"></span>
     <button class="tool-btn" onclick="downloadMd()">💾 保存</button>
-    <span class="status" id="status">0 字</span>
+    <span class="status" id="status">0 �?/span>
 </div>
 
 <div class="main">
@@ -202,25 +202,25 @@ const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const status = document.getElementById('status');
 
-const defaultContent = `# 欢迎使用 Markdown 编辑器 ✨
+const defaultContent = `# 欢迎使用 Markdown 编辑�?�?
 
-这是一个**实时预览**的 Markdown 编辑器，左边写，右边立刻看到效果！
+这是一�?*实时预览**�?Markdown 编辑器，左边写，右边立刻看到效果�?
 
 ## 功能列表
 
 - 实时渲染预览
 - 常用格式快捷按钮
 - 支持代码高亮
-- 深色主题，保护眼睛
-- 可以保存为 .md 文件
+- 深色主题，保护眼�?
+- 可以保存�?.md 文件
 
 ## 语法示例
 
 ### 文本样式
 
-这是 **粗体**，这是 *斜体*，这是 ~~删除线~~，这是 \`行内代码\`。
+这是 **粗体**，这�?*斜体*，这�?~~删除线~~，这�?\`行内代码\`�?
 
-### 代码块
+### 代码�?
 
 \`\`\`python
 def hello():
@@ -230,15 +230,15 @@ def hello():
 
 ### 引用
 
-> 学习编程最好的时间是十年前，其次是现在。
+> 学习编程最好的时间是十年前，其次是现在�?
 
 ### 表格
 
-| 技能 | 熟练度 | 状态 |
+| 技�?| 熟练�?| 状�?|
 |------|--------|------|
-| C 语言 | ⭐⭐⭐⭐ | 进行中 |
-| Python | ⭐⭐⭐ | 学习中 |
-| 前端 | ⭐⭐ | 入门中 |
+| C 语言 | ⭐⭐⭐⭐ | 进行�?|
+| Python | ⭐⭐�?| 学习�?|
+| 前端 | ⭐⭐ | 入门�?|
 
 ### 链接
 
@@ -293,7 +293,7 @@ function update() {
     preview.innerHTML = renderMarkdown(editor.value);
     const charCount = editor.value.length;
     const wordCount = editor.value.trim() ? editor.value.trim().split(/\s+/).length : 0;
-    status.textContent = `${charCount} 字 · ${wordCount} 词`;
+    status.textContent = `${charCount} �?· ${wordCount} 词`;
 }
 
 editor.addEventListener('input', update);
@@ -317,7 +317,7 @@ function downloadMd() {
     a.click();
 }
 
-// Tab 键支持
+// Tab 键支�?
 editor.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
         e.preventDefault();
@@ -325,7 +325,7 @@ editor.addEventListener('keydown', (e) => {
     }
 });
 
-// 拖拽分割线
+// 拖拽分割�?
 const divider = document.getElementById('divider');
 let dragging = false;
 divider.addEventListener('mousedown', () => dragging = true);
@@ -339,6 +339,6 @@ addEventListener('mousemove', (e) => {
     previewPane.style.flex = `0 0 ${(1 - ratio) * 100}%`;
 });
 </script>
-<script src="auth.js"></script>
+<script src="firebase-config.js"></script><script src="auth.js"></script>
 </body>
 </html>

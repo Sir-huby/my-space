@@ -66,14 +66,14 @@
     </style>
 </head>
 <body>
-<a href="index.html" style="position:fixed;top:20px;left:20px;z-index:999;display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:50px;color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.85rem;font-family:'Segoe UI','Microsoft YaHei',sans-serif;transition:all 0.3s;" onmouseover="this.style.borderColor='#6c63ff';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">← 返回主页</a>
+<a href="index.html" style="position:fixed;top:20px;left:20px;z-index:999;display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(0,0,0,0.4);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:50px;color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.85rem;font-family:'Segoe UI','Microsoft YaHei',sans-serif;transition:all 0.3s;" onmouseover="this.style.borderColor='#6c63ff';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.7)'">�?返回主页</a>
 <canvas id="c"></canvas>
 <div class="custom-cursor" id="cursor"></div>
 <div class="info">移动鼠标 · 点击产生爆炸 · 按住拖动绘制光带</div>
 <div class="controls">
     <button class="ctrl-btn" onclick="switchMode()">🎨 切换模式</button>
     <button class="ctrl-btn" onclick="switchColor()">🌈 切换配色</button>
-    <button class="ctrl-btn" onclick="clearAll()">✨ 清空画布</button>
+    <button class="ctrl-btn" onclick="clearAll()">�?清空画布</button>
 </div>
 
 <script>
@@ -225,7 +225,7 @@ function switchMode() { mode = (mode + 1) % 3; }
 function switchColor() { colorScheme = (colorScheme + 1) % colorSchemes.length; }
 function clearAll() { particles.length = 0; ctx.clearRect(0, 0, W, H); }
 
-// 自动飘浮的背景粒子
+// 自动飘浮的背景粒�?
 const bgParticles = [];
 for (let i = 0; i < 60; i++) {
     bgParticles.push({
@@ -251,7 +251,7 @@ function animate() {
         ctx.fill();
     });
 
-    // 主粒子
+    // 主粒�?
     for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
         if (particles[i].life <= 0) { particles.splice(i, 1); continue; }
@@ -263,6 +263,6 @@ function animate() {
 }
 animate();
 </script>
-<script src="auth.js"></script>
+<script src="firebase-config.js"></script><script src="auth.js"></script>
 </body>
 </html>

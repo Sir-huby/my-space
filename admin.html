@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 · My Space</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #08080f;
+            --card: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.06);
+            --text: #e2e8f0;
+            --text2: #64748b;
+            --accent: #6366f1;
+            --red: #ef4444;
+            --green: #22c55e;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .grid-bg {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+            background-size: 60px 60px; z-index: 0;
+        }
+
+        /* 登录页 */
+        #login-page {
+            position: fixed; inset: 0; z-index: 100;
+            background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+        }
+        #login-page .login-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 24px; padding: 48px 40px; text-align: center;
+            max-width: 400px; width: 90%;
+        }
+        #login-page h2 { font-size: 1.5rem; margin-bottom: 8px; }
+        #login-page .sub { color: var(--text2); font-size: 0.9rem; margin-bottom: 28px; }
+        #login-page input {
+            width: 100%; padding: 14px 18px; border-radius: 12px;
+            border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+            color: var(--text); font-size: 1rem; outline: none; margin-bottom: 16px;
+            text-align: center;
+        }
+        #login-page input:focus { border-color: rgba(99,102,241,0.4); }
+        #login-page .login-btn {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+        }
+        #login-page .err { color: var(--red); font-size: 0.85rem; margin-top: 12px; }
+
+        /* 主面板 */
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1000px; margin: 0 auto; padding: 32px 24px;
+        }
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+        }
+        .header h1 { font-size: 1.5rem; }
+        .header h1 span {
+            background: linear-gradient(135deg, var(--accent), #c084fc);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .header-btns { display: flex; gap: 10px; }
+        .btn {
+            padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border);
+            background: var(--card); color: var(--text); cursor: pointer;
+            font-size: 0.85rem; font-family: inherit; transition: all 0.2s;
+        }
+        .btn:hover { border-color: var(--accent); background: rgba(99,102,241,0.1); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none; color: #fff; font-weight: 600;
+        }
+        .btn-primary:hover { box-shadow: 0 4px 20px rgba(99,102,241,0.3); }
+        .btn-danger { border-color: rgba(239,68,68,0.3); color: var(--red); }
+        .btn-danger:hover { background: rgba(239,68,68,0.1); border-color: var(--red); }
+
+        /* 统计卡片 */
+        .stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 20px;
+        }
+        .stat-card .num { font-size: 2rem; font-weight: 700; }
+        .stat-card .label { color: var(--text2); font-size: 0.8rem; margin-top: 4px; }
+        .stat-card .num.purple { color: #818cf8; }
+        .stat-card .num.green { color: #22c55e; }
+        .stat-card .num.orange { color: #f59e0b; }
+
+        /* 分区 */
+        .section {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 20px; padding: 28px; margin-bottom: 24px;
+        }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .section-header h2 { font-size: 1.15rem; }
+
+        /* 表格 */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 12px; color: var(--text2); font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-active { background: rgba(34,197,94,0.15); color: var(--green); }
+        .badge-inactive { background: rgba(239,68,68,0.15); color: var(--red); }
+        .badge-revoked { background: rgba(239,68,68,0.15); color: var(--red); }
+
+        /* 添加邀请码弹窗 */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal {
+            background: #12121f; border: 1px solid var(--border);
+            border-radius: 20px; padding: 32px; max-width: 420px; width: 90%;
+        }
+        .modal h3 { font-size: 1.2rem; margin-bottom: 20px; }
+        .modal label { display: block; color: var(--text2); font-size: 0.8rem; margin-bottom: 6px; margin-top: 14px; }
+        .modal input, .modal select {
+            width: 100%; padding: 12px 14px; border-radius: 10px;
+            border: 1px solid var(--border); background: rgba(255,255,255,0.04);
+            color: var(--text); font-size: 0.95rem; outline: none; font-family: inherit;
+        }
+        .modal input:focus { border-color: rgba(99,102,241,0.4); }
+        .modal .modal-btns { display: flex; gap: 10px; margin-top: 24px; }
+        .modal .modal-btns .btn { flex: 1; text-align: center; }
+
+        .empty { text-align: center; color: var(--text2); padding: 40px; font-size: 0.95rem; }
+        .mono { font-family: 'Cascadia Code','Consolas', monospace; letter-spacing: 1px; }
+        .small { font-size: 0.8rem; color: var(--text2); }
+
+        @media (max-width: 600px) {
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(4), td:nth-child(4) { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- 管理员登录 -->
+<div id="login-page">
+    <div class="login-card">
+        <div style="font-size:2.5rem;margin-bottom:12px;">⚙️</div>
+        <h2>管理后台</h2>
+        <p class="sub">请输入管理员密码</p>
+        <input type="password" id="admin-pwd" placeholder="管理员密码">
+        <button class="login-btn" id="admin-login-btn">进入后台</button>
+        <div class="err" id="login-err"></div>
+    </div>
+</div>
+
+<!-- 主面板（登录后显示） -->
+<div class="container" id="main-panel" style="display:none;">
+    <div class="header">
+        <h1>⚙️ <span>管理后台</span></h1>
+        <div class="header-btns">
+            <a href="index.html" class="btn">← 返回主页</a>
+            <button class="btn" onclick="loadData()">🔄 刷新</button>
+            <button class="btn" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="num purple" id="stat-codes">0</div>
+            <div class="label">邀请码总数</div>
+        </div>
+        <div class="stat-card">
+            <div class="num green" id="stat-active">0</div>
+            <div class="label">活跃邀请码</div>
+        </div>
+        <div class="stat-card">
+            <div class="num orange" id="stat-sessions">0</div>
+            <div class="label">总会话数</div>
+        </div>
+    </div>
+
+    <!-- 邀请码管理 -->
+    <div class="section">
+        <div class="section-header">
+            <h2>🔑 邀请码管理</h2>
+            <button class="btn btn-primary" onclick="showAddModal()">+ 新建邀请码</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>邀请码</th>
+                    <th>状态</th>
+                    <th>使用次数</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="codes-table"></tbody>
+        </table>
+        <div class="empty" id="codes-empty" style="display:none;">还没有邀请码，点击上方按钮创建</div>
+    </div>
+
+    <!-- 会话管理 -->
+    <div class="section">
+        <div class="section-header">
+            <h2>👥 在线会话</h2>
+            <button class="btn btn-danger" onclick="revokeAll()">踢出所有人</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>会话 ID</th>
+                    <th>使用的邀请码</th>
+                    <th>登录时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="sessions-table"></tbody>
+        </table>
+        <div class="empty" id="sessions-empty" style="display:none;">暂无会话记录</div>
+    </div>
+</div>
+
+<!-- 新建邀请码弹窗 -->
+<div class="modal-overlay hidden" id="add-modal">
+    <div class="modal">
+        <h3>🔑 新建邀请码</h3>
+        <label>邀请码（留空自动生成）</label>
+        <input type="text" id="new-code-input" placeholder="如 VIP888" style="text-transform:uppercase;">
+        <label>最大使用次数（0 = 不限）</label>
+        <input type="number" id="new-code-max" value="0" min="0">
+        <div class="modal-btns">
+            <button class="btn" onclick="hideAddModal()">取消</button>
+            <button class="btn btn-primary" onclick="addCode()">创建</button>
+        </div>
+    </div>
+</div>
+
+<script src="firebase-config.js"></script>
+<script>
+const DB = firebaseConfig.databaseURL;
+const ADMIN_KEY = 'myspace_admin';
+
+async function fbGet(path) {
+    const r = await fetch(`${DB}/${path}.json`);
+    return r.json();
+}
+async function fbSet(path, data) {
+    await fetch(`${DB}/${path}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+}
+async function fbDelete(path) {
+    await fetch(`${DB}/${path}.json`, { method: 'DELETE' });
+}
+
+// 管理员登录
+document.getElementById('admin-login-btn').onclick = async () => {
+    const pwd = document.getElementById('admin-pwd').value;
+    if (!pwd) return;
+    const adminPwd = await fbGet('admin/password');
+    if (pwd === adminPwd) {
+        sessionStorage.setItem(ADMIN_KEY, 'true');
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('main-panel').style.display = 'block';
+        loadData();
+    } else {
+        document.getElementById('login-err').textContent = '密码错误';
+    }
+};
+document.getElementById('admin-pwd').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('admin-login-btn').click();
+});
+
+if (sessionStorage.getItem(ADMIN_KEY)) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('main-panel').style.display = 'block';
+    setTimeout(loadData, 100);
+}
+
+function logout() {
+    sessionStorage.removeItem(ADMIN_KEY);
+    document.getElementById('login-page').style.display = 'flex';
+    document.getElementById('main-panel').style.display = 'none';
+}
+
+async function loadData() {
+    const codes = await fbGet('codes') || {};
+    const sessions = await fbGet('sessions') || {};
+
+    const codeEntries = Object.entries(codes);
+    const sessionEntries = Object.entries(sessions);
+
+    document.getElementById('stat-codes').textContent = codeEntries.length;
+    document.getElementById('stat-active').textContent = codeEntries.filter(([,v]) => v.active).length;
+    document.getElementById('stat-sessions').textContent = sessionEntries.length;
+
+    const codesTable = document.getElementById('codes-table');
+    const codesEmpty = document.getElementById('codes-empty');
+    if (codeEntries.length === 0) {
+        codesTable.innerHTML = '';
+        codesEmpty.style.display = 'block';
+    } else {
+        codesEmpty.style.display = 'none';
+        codesTable.innerHTML = codeEntries.map(([code, data]) => `
+            <tr>
+                <td class="mono">${code}</td>
+                <td><span class="badge ${data.active ? 'badge-active' : 'badge-inactive'}">${data.active ? '活跃' : '已停用'}</span></td>
+                <td>${data.usedCount || 0}${data.maxUses ? ' / ' + data.maxUses : ' / ∞'}</td>
+                <td class="small">${data.created ? new Date(data.created).toLocaleString('zh-CN') : '-'}</td>
+                <td>
+                    <button class="btn" style="padding:5px 12px;font-size:0.75rem;" onclick="toggleCode('${code}', ${!data.active})">
+                        ${data.active ? '停用' : '启用'}
+                    </button>
+                    <button class="btn btn-danger" style="padding:5px 12px;font-size:0.75rem;" onclick="deleteCode('${code}')">
+                        删除
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    const sessionsTable = document.getElementById('sessions-table');
+    const sessionsEmpty = document.getElementById('sessions-empty');
+    if (sessionEntries.length === 0) {
+        sessionsTable.innerHTML = '';
+        sessionsEmpty.style.display = 'block';
+    } else {
+        sessionsEmpty.style.display = 'none';
+        sessionsTable.innerHTML = sessionEntries
+            .sort((a, b) => new Date(b[1].time) - new Date(a[1].time))
+            .map(([id, data]) => `
+            <tr>
+                <td class="mono small">${id.substring(0, 16)}...</td>
+                <td class="mono">${data.code || '-'}</td>
+                <td class="small">${data.time ? new Date(data.time).toLocaleString('zh-CN') : '-'}</td>
+                <td><span class="badge ${data.revoked ? 'badge-revoked' : 'badge-active'}">${data.revoked ? '已踢出' : '在线'}</span></td>
+                <td>
+                    ${data.revoked ? '<span class="small">已踢出</span>' : `
+                        <button class="btn btn-danger" style="padding:5px 12px;font-size:0.75rem;" onclick="revokeSession('${id}')">
+                            踢出
+                        </button>
+                    `}
+                </td>
+            </tr>
+        `).join('');
+    }
+}
+
+async function toggleCode(code, active) {
+    await fbSet(`codes/${code}/active`, active);
+    loadData();
+}
+
+async function deleteCode(code) {
+    if (!confirm(`确定删除邀请码 ${code} 吗？`)) return;
+    await fbDelete(`codes/${code}`);
+    loadData();
+}
+
+async function revokeSession(id) {
+    await fbSet(`sessions/${id}/revoked`, true);
+    loadData();
+}
+
+async function revokeAll() {
+    if (!confirm('确定踢出所有人吗？所有用户需要重新输入邀请码。')) return;
+    const sessions = await fbGet('sessions') || {};
+    const promises = Object.keys(sessions).map(id => fbSet(`sessions/${id}/revoked`, true));
+    await Promise.all(promises);
+    loadData();
+}
+
+function showAddModal() { document.getElementById('add-modal').classList.remove('hidden'); }
+function hideAddModal() { document.getElementById('add-modal').classList.add('hidden'); }
+
+async function addCode() {
+    let code = document.getElementById('new-code-input').value.trim().toUpperCase();
+    const maxUses = parseInt(document.getElementById('new-code-max').value) || 0;
+
+    if (!code) {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        code = '';
+        for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    await fbSet(`codes/${code}`, {
+        active: true,
+        created: new Date().toISOString(),
+        usedCount: 0,
+        maxUses: maxUses
+    });
+
+    document.getElementById('new-code-input').value = '';
+    document.getElementById('new-code-max').value = '0';
+    hideAddModal();
+    loadData();
+}
+
+// 初始化：确保 admin 密码和默认邀请码存在
+async function initAdmin() {
+    const adminPwd = await fbGet('admin/password');
+    if (!adminPwd) {
+        await fbSet('admin/password', 'admin123');
+        await fbSet('codes/MYSPACE2026', { active: true, created: new Date().toISOString(), usedCount: 0, maxUses: 0 });
+        await fbSet('codes/HELLO', { active: true, created: new Date().toISOString(), usedCount: 0, maxUses: 0 });
+        await fbSet('codes/VIP666', { active: true, created: new Date().toISOString(), usedCount: 0, maxUses: 0 });
+        console.log('[Admin] 初始化完成，默认密码: admin123');
+    }
+}
+initAdmin();
+</script>
+</body>
+</html>
